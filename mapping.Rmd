@@ -67,14 +67,26 @@ Allison_rain=filter(Allison_rain,fips%in%Allison_dist$fips)
 Floyd_map=map
 for(i in 1:nrow(Floyd_map)){
   Floyd_map$rain[i]=Floyd_rain$precip[Floyd_rain$fips==Floyd_map$fips[i]]
+  
 }
+#Group2: break the rainfall into 9 parts as required
+Floyd_map$cut <- cut(Floyd_map$rain,
+                      breaks=c(0,25,50,75,100,125,150,175,200,225),
+                      include.lowest = T)
+
 ggplot()+
-  geom_polygon(data=Floyd_map,mapping=aes(long,lat,group=group,fill=rain))+
-  scale_fill_continuous(low='white',high='blue', name='Rainfall (mm)')+
+  #Group2: use fill=cut to show the break
+  geom_polygon(data=Floyd_map,mapping=aes(x=long,y=lat,group=group,fill=cut))+
+  scale_fill_brewer(palette="Blues")+
   geom_path(data=Floyd_map,mapping=aes(long,lat,group=group))+
   geom_path(data=Floyd_track,mapping=aes(longitude,latitude))+
   ggtitle("Floyd-1999")+
-  theme(plot.title=element_text(hjust=0.4))
+  theme(plot.title=element_text(hjust=0.4))+
+  #Group2: limitting the range of x and y can make your map in the center
+  xlim(min(Floyd_map$long),max(Floyd_map$long))+
+  ylim(min(Floyd_map$lat),max(Floyd_map$lat))+
+  labs(fill="Rainfall (mm)")
+  
 ```
 
 ```{r}
